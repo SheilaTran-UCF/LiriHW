@@ -15,9 +15,8 @@ nmp install init -y
 3. Run LiriJS
     node Liri.js --version
 and should print out the lastest build version of Liris, 
-
-4. 
-5. built with
+ 
+4. built with
 LiriJS was build with:
 -NodeJS
 -NPM
@@ -26,17 +25,37 @@ LiriJS was build with:
 -Dot-env npm module
 -
 
-6. Command 
+5. Command 
 a.movie-this [name value]
 b.spotify-this-song [name value]
 c.do-what-it-says
 d.concert-this [name value]
 
-Description
+6. Description
 a. Returns movie information for provided name value
 b. Returns song information for provided name value
 c. Runs the command that is stored in random.txt
 d. Returns shows concert information for provided name value
+
+7. Import Keys
+- Read and set environment variables
+require("dotenv").config();
+
+- Import the API keys
+var keys = require("./keys");
+
+- Import the node-spotify-api package.
+var Spotify = require("node-spotify-api");
+
+- Import the axios npm package.
+var axios = require("axios");
+
+- Import the moment npm package.
+var moment = require("moment");
+
+- Import the FS package for read/write.
+var fs = require("fs");
+
 
 
 

@@ -1,25 +1,4 @@
-// // 
-// require("dotenv").config();
 
-// var keys = require("./keys");
-
-// var axios = require("axios");
-
-// var Spotify = require("node-spotify-api");
-
-// var moment = require("moment");
-
-// var fs =require("fs");
-
-// let spotify = new Spotify(key.spotify);
-
-// //-----------------------------//
-// // this for search request //
-
-// var search = "";
-
-// DEPENDENCIES
-// =====================================
 
 // Read and set environment variables
 require("dotenv").config();
@@ -38,7 +17,7 @@ var moment = require("moment");
 
 // Import the FS package for read/write.
 var fs = require("fs");
-// console.log(keys.spotify);
+
 // Initialize the spotify API client using our client id and secret
 var spotify = new Spotify(keys.spotify);
 
@@ -60,12 +39,12 @@ var writeToLog = function(data) {
 
 
 //  function to get the artist name
-var getArtistNames = function(artist) {
+var artistNames = function(artist) {
   return artist.name;
 };
 
 // Function for running a Spotify search
-var getMeSpotify = function(songName) {
+var thisSongspotify = function(songName) {
   if (songName === undefined) {
     songName = "beautiful-life";
   }
@@ -76,22 +55,22 @@ var getMeSpotify = function(songName) {
     
     function(err, data) {
     if (err) {
-      console.log("Error occurred: " + err);
+      console.log("Error : " + err);
       return;
     }
-
+    // Create var datasongs 
     var songs = data.tracks.items;
     var data = [];
-
+    // loop for data songs.length
     for (var i = 0; i < songs.length; i++) {
       data.push({
-        "Artist(s)"     : songs[i].artists.map(getArtistNames),
+        "Artist(s)"     : songs[i].artists.map(artistNames),
         "Song name: "   : songs[i].name,
         "Album: "       : songs[i].album.name,
         "Preview song: ": songs[i].preview_url
       });
     }
-
+    // print & write songs data
     console.log(data);
     writeToLog(data);
   });
@@ -109,24 +88,18 @@ var getConcert = function(artist) {
         console.log("No results found for " + artist);
         return;
       }
-
+      // Create var logData 
       var logData = [];
-
       logData.push("Upcoming concerts for " + artist + ":");
-
+      // loop for shows (concerts) data
       for (var i = 0; i < jsonData.length; i++) {
         var show = jsonData[i];
 
-        // Push each line of concert data to `logData`
+        // Push each line of concert data to logData
         // If a concert doesn't have a region, display the country instead
-     
         logData.push(
-          show.venue.city +
-            "," +
-            (show.venue.region || show.venue.country) +
-            " at " +
-            show.venue.name +
-            " " +
+          show.venue.city + "," + (show.venue.region || show.venue.country) + " at " +
+           show.venue.name + " " +
             // Use moment to format the date
             moment(show.datetime).format("MM/DD/YYYY")
         );
@@ -144,14 +117,14 @@ var getMovie = function(movieName) {
   if (movieName === undefined) {
     movieName = "Mr Nobody";
   }
+  // Create var link
+  var link = "http://www.omdbapi.com/?t=" + movieName + "&y=&plot=full&tomatoes=true&apikey=trilogy";
 
-  var urlHit = "http://www.omdbapi.com/?t=" + movieName + "&y=&plot=full&tomatoes=true&apikey=trilogy";
-
-  axios.get(urlHit).then(
+  axios.get(link).then(
     function(response) {
       var jsonData = response.data;
-
-      var data = {
+      // Create movie data
+      let data = {
         "Title:": jsonData.Title,
         "Year:": jsonData.Year,
         "Rated:": jsonData.Rated,
@@ -164,20 +137,18 @@ var getMovie = function(movieName) {
         "Actors:": jsonData.Actors,
         "Plot:": jsonData.Plot
       };
-
+      // print & write the movie data
       console.log(data);
       writeToLog(data);
     }
   );
 };
 
-
-
-// Function for running a command based on text file
+// Function for running a command data on text file
 var doWhatItSays = function() {
   fs.readFile("random.txt", "utf8", function(error, data) {
     console.log(data);
-
+    //create var inforData for split ","
     var inforData = data.split(",");
 
     if (inforData.length === 2) {
@@ -189,35 +160,38 @@ var doWhatItSays = function() {
   });
 };
 
-// Function for determining which command is executed
+//Create Function for determining which command is executed
 var pick = function(caseData, functionData) {
   switch (caseData) {
+    // case data for concert-this
   case "concert-this":
   getConcert(functionData);
     break;
+    // case data for spotify-this-song
   case "spotify-this-song":
-    getMeSpotify(functionData);
+    thisSongspotify(functionData);
     break;
+    // case data for movie-this
   case "movie-this":
     getMovie(functionData);
     break;
+    // case data for do-what-it-say
   case "do-what-it-says":
     doWhatItSays();
     break;
+    // case default
   default:
-    console.log("input another infor");
+    console.log("input another data");
   }
 };
 
-// Function which takes in command line arguments and executes correct function accordingly
-var runThis = function(argOne, argTwo) {
-  pick(argOne, argTwo);
+// create Function which data takes in command line arguments and executes correct function accordingly
+var argv = function(argv1, argv2) {
+  pick(argv1, argv2);
 };
 
-// MAIN PROCESS
-// =====================================
 // console.log(process.argv[2]);
-runThis(process.argv[2], process.argv.slice(3).join(" "));
+argv(process.argv[2], process.argv.slice(3).join(" "));
 
 
 
