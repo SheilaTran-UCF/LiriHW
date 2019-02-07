@@ -48,6 +48,10 @@ var fs = require("fs");
 
 ## Preview
 
-<img src="Capture-pics/Capture1.png" width="100%">
+<img src="Capture-pics/Capture1.PNG" width="100%">
+<img src="Capture-pics/Capture2.PNG" width="100%">
+<img src="Capture-pics/Capture3.PNG" width="100%">
+<img src="Capture-pics/Capture4.PNG" width="100%">
+
 
 
