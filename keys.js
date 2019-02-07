@@ -1,7 +1,10 @@
-console.log("Keys loaded");
-// console.log(process.env);
+// console.log("Keys loaded");
+// // console.log(process.env);
+
+
+console.log('this is loaded');
 
 exports.spotify = {
-  id: "75356d7c874f4388ac7355e8e245ca8c",
-  secret:"b074f96c05ea4d8c8803bbf507adff57"
+  id: process.env.SPOTIFY_ID,
+  secret: process.env.SPOTIFY_SECRET
 };
