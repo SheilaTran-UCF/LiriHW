@@ -1,5 +1,5 @@
-
-
+// Import color chalk package
+const chalk = require("chalk");
 // Read and set environment variables
 require("dotenv").config();
 
@@ -25,9 +25,9 @@ var spotify = new Spotify(keys.spotify);
 // =====================================
 
 // Writes to the log.txt file
-var writeToLog = function(data) {
+var writeToLog = function (data) {
   // Append the JSON data and add a newline character to the end of the log.txt file
-  fs.appendFile("log.txt", JSON.stringify(data) + "\n", function(err) {
+  fs.appendFile("log.txt", JSON.stringify(data) + "\n", function (err) {
     if (err) {
       return console.log(err);
     }
@@ -36,117 +36,133 @@ var writeToLog = function(data) {
   });
 };
 
-
-
 //  function to get the artist name
-var artistNames = function(artist) {
+var artistNames = function (artist) {
   return artist.name;
 };
 
 // Function for running a Spotify search
-var thisSongspotify = function(songName) {
+var thisSongspotify = function (songName) {
   if (songName === undefined) {
     songName = "beautiful-life";
   }
 
-  spotify.search({ 
-    type: "track", 
-    query: songName },
-    
-    function(err, data) {
-    if (err) {
-      console.log("Error : " + err);
-      return;
-    }
-    // Create var datasongs 
-    var songs = data.tracks.items;
-    var data = [];
-    // loop for data songs.length
-    for (var i = 0; i < songs.length; i++) {
-      data.push({
-        "Artist(s)"     : songs[i].artists.map(artistNames),
-        "Song name: "   : songs[i].name,
-        "Album: "       : songs[i].album.name,
-        "Preview song: ": songs[i].preview_url
-      });
-    }
-    // print & write songs data
-    console.log(data);
-    writeToLog(data);
-  });
+  spotify.search({
+    type: "track",
+    query: songName
+  },
+
+    function (err, data) {
+      if (err) {
+        console.log("Error : " + err);
+        return;
+      }
+      // Create var datasongs 
+      var songs = data.tracks.items;
+      var data = [];
+      // loop for data songs.length
+      for (var i = 0; i < songs.length; i++) {
+        data.push([
+          chalk.green("Artists: ") + songs[i].artists.map(artistNames),
+          chalk.green("Song name: ") + songs[i].name,
+          chalk.green("Album: ") + songs[i].album.name,
+          chalk.green("Preview song: ") + songs[i].preview_url
+        ]);
+      }
+
+      data.forEach(function (songs) {
+        console.log("\n-----------------");
+        songs.forEach(function (song) {
+          console.log(song);
+        })
+        console.log("-----------------");
+      })
+      writeToLog(data);
+
+    });
+
 };
 
 // Function for concert search
-var getConcert = function(artist) {
+var getConcert = function (artist) {
   var queryURL = "https://rest.bandsintown.com/artists/" + artist + "/events?app_id=codingbootcamp";
 
   axios.get(queryURL).then(
-    function(response) {
+    function (response) {
       var jsonData = response.data;
 
       if (!jsonData.length) {
         console.log("No results found for " + artist);
         return;
       }
-      // Create var logData 
       var logData = [];
+
       logData.push("Upcoming concerts for " + artist + ":");
-      // loop for shows (concerts) data
+
       for (var i = 0; i < jsonData.length; i++) {
         var show = jsonData[i];
 
         // Push each line of concert data to logData
-        // If a concert doesn't have a region, display the country instead
-        logData.push(
-          show.venue.city + "," + (show.venue.region || show.venue.country) + " at " +
-           show.venue.name + " " +
-            // Use moment to format the date
-            moment(show.datetime).format("MM/DD/YYYY")
-        );
-      }
+          logData.push(
+          // Use moment to format the date
+          chalk.blue(moment(show.datetime).format("MM/DD/YYYY")) +
+          show.venue.city +
+          "," +
+          // If a concert doesn't have a region, display the country + shows name
+          (show.venue.region || show.venue.country) +
+          " at " +
+          show.venue.name
 
-      // Print and write the concert data as a string joined by a newline character
-      console.log(logData.join("\n"));
+        );
+      }// for loop for chalk color
+      for (const [key, value] of Object.entries(logData)) {
+        console.log(chalk.red(key));
+        console.log(value);
+      }
+      //   write print out concert data
       writeToLog(logData.join("\n"));
+
     }
   );
 };
 
 // Function for running a Movie Search
-var getMovie = function(movieName) {
+var getMovie = function (movieName) {
   if (movieName === undefined) {
-    movieName = "Mr Nobody";
+    movieName = "Love";
   }
-  // Create var link
+  // Create var link for Movie
   var link = "http://www.omdbapi.com/?t=" + movieName + "&y=&plot=full&tomatoes=true&apikey=trilogy";
 
   axios.get(link).then(
-    function(response) {
+    function (response) {
       var jsonData = response.data;
-      // Create movie data
-      let data = {
-        "Title:": jsonData.Title,
-        "Year:": jsonData.Year,
-        "Rated:": jsonData.Rated,
-        "IMDB Rating:": jsonData.imdbRating,
-        "Country:": jsonData.Country,
-        "Language:": jsonData.Language,
-        "Rotten Tomatoes Rating:": jsonData.Ratings[1].Value,
-        "Release Date": jsonData.Released,
-        "Produce in": jsonData.Country,
-        "Actors:": jsonData.Actors,
-        "Plot:": jsonData.Plot
-      };
+      // Create Movie data
+      let data = [
+        chalk.green("Title: ") + jsonData.Title,
+        chalk.green("Year: ")+ jsonData.Year,
+        chalk.green("Rated: ") + jsonData.Rated,
+        chalk.green("IMDB Rating: ") + jsonData.imdbRating,
+        chalk.green("Country: ") + jsonData.Country,
+        chalk.green("Language: ") + jsonData.Language,
+        chalk.green("Rotten Tomatoes Rating: ") + jsonData.Ratings[1].Value,
+        chalk.green("Release Date: ") + jsonData.Released,
+        chalk.green("Produce in ") + jsonData.Country,
+        chalk.green("Actors: ") + jsonData.Actors,
+        chalk.green("Plot: ") + jsonData.Plot
+      ];
       // print & write the movie data
-      console.log(data);
+      data.forEach(function (movie) {
+        console.log(movie);
+      });
       writeToLog(data);
     }
   );
 };
 
 // Function for running a command data on text file
-var doWhatItSays = function() {
-  fs.readFile("random.txt", "utf8", function(error, data) {
+var doWhatItSays = function () {
+  fs.readFile("random.txt", "utf8", function (error, data) {
     console.log(data);
     //create var inforData for split ","
     var inforData = data.split(",");
@@ -161,32 +177,32 @@ var doWhatItSays = function() {
 };
 
 //Create Function for determining which command is executed
-var pick = function(caseData, functionData) {
+var pick = function (caseData, functionData) {
   switch (caseData) {
     // case data for concert-this
-  case "concert-this":
-  getConcert(functionData);
-    break;
+    case "concert-this":
+      getConcert(functionData);
+      break;
     // case data for spotify-this-song
-  case "spotify-this-song":
-    thisSongspotify(functionData);
-    break;
+    case "spotify-this-song":
+      thisSongspotify(functionData);
+      break;
     // case data for movie-this
-  case "movie-this":
-    getMovie(functionData);
-    break;
+    case "movie-this":
+      getMovie(functionData);
+      break;
     // case data for do-what-it-say
-  case "do-what-it-says":
-    doWhatItSays();
-    break;
+    case "do-what-it-says":
+      doWhatItSays();
+      break;
     // case default
-  default:
-    console.log("input another data");
+    default:
+      console.log("input another data");
   }
 };
 
-// create Function which data takes in command line arguments and executes correct function accordingly
-var argv = function(argv1, argv2) {
+// Create Function which data takes in command line arguments and executes correct function accordingly
+var argv = function (argv1, argv2) {
   pick(argv1, argv2);
 };
 

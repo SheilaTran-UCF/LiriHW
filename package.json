@@ -19,6 +19,7 @@
   "homepage": "https://github.com/SheilaTran-UCF/LiriHW#readme",
   "dependencies": {
     "axios": "^0.18.0",
+    "chalk": "^2.4.2",
     "dotenv": "^6.2.0",
     "fs": "0.0.1-security",
     "moment": "^2.24.0",
